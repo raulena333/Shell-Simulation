@@ -1,0 +1,156 @@
+For the air resistance class, we’ll focus on a few key physics principles to model the drag force and its variations. Here's a breakdown of the equations and concepts you'll need to implement the various functions realistically:
+
+### 1. **Drag Force Calculation:**
+The drag force acting on an object moving through a fluid (in this case, air) is given by the **drag equation**:
+
+\[
+F_d = \frac{1}{2} \cdot C_d \cdot \rho \cdot A \cdot v^2
+\]
+
+Where:
+- \( F_d \) = Drag force (in Newtons)
+- \( C_d \) = Drag coefficient (dimensionless, depends on the shape and flow conditions of the object)
+- \( \rho \) = Air density (kg/m³)
+- \( A \) = Cross-sectional area of the object (m²) – perpendicular to the flow direction
+- \( v \) = Velocity of the object relative to the air (m/s)
+
+In your case, the drag force \( F_d \) will be a vector quantity because it acts in the opposite direction of the velocity. You’ll need to subtract this force from the projectile's velocity vector during simulation.
+
+### 2. **Dynamic Drag Coefficient (Optional Function):**
+The drag coefficient \( C_d \) is not always constant. It varies based on the object's velocity, the type of object, and its flow regime (subsonic, transonic, supersonic). For simplicity, we'll consider that \( C_d \) can be a function of velocity (or Mach number).
+
+For example, at subsonic speeds, the drag coefficient might be relatively constant (e.g., \( C_d \sim 0.47 \) for a sphere). However, at higher speeds (supersonic), the drag coefficient decreases or behaves differently.
+
+To estimate the drag coefficient based on velocity, you could use the **Mach number**:
+
+\[
+M = \frac{v}{c}
+\]
+
+Where:
+- \( M \) = Mach number (dimensionless)
+- \( v \) = Velocity of the projectile
+- \( c \) = Speed of sound at the current altitude/temperature
+
+If you have the Mach number, you can use approximate empirical formulas to adjust \( C_d \) depending on your speed regime. For example:
+- For subsonic speeds (Mach \( M < 1 \)): \( C_d \sim 0.47 \) (constant for spheres)
+- For supersonic speeds (Mach \( M > 1 \)): \( C_d \) decreases based on the speed and could be modeled with a look-up table or a formula.
+
+### 3. **Air Density as a Function of Altitude:**
+Air density (\( \rho \)) changes with altitude. A simple model, **the International Standard Atmosphere (ISA) model**, can give us air density as a function of altitude. Here’s an approximate equation:
+
+\[
+\rho(h) = \rho_0 \left( 1 - \frac{L \cdot h}{T_0} \right)^{\frac{g_0 \cdot M}{R \cdot L} - 1}
+\]
+
+Where:
+- \( \rho_0 \) = Sea level air density (approximately 1.225 kg/m³)
+- \( L \) = Standard temperature lapse rate (~0.0065 K/m)
+- \( T_0 \) = Standard temperature at sea level (288.15 K)
+- \( g_0 \) = Standard gravitational acceleration (9.80665 m/s²)
+- \( M \) = Molar mass of Earth's air (0.0289644 kg/mol)
+- \( R \) = Universal gas constant (8.3144621 J/(mol·K))
+- \( h \) = Altitude (in meters)
+
+For practical purposes, if you don’t need a full ISA model, you can simplify the function and use approximations or look-up tables based on altitude.
+
+### 4. **Cross-sectional Area Based on Orientation (Optional):**
+If your projectile is not spherical and/or changes orientation, the effective cross-sectional area \( A \) exposed to airflow may vary.
+
+For instance, for a cylindrical projectile, the cross-sectional area would be:
+
+\[
+A = \pi \cdot r^2
+\]
+
+Where \( r \) is the radius of the cylinder. If the projectile has a specific angle of attack or if it rotates, the cross-sectional area can change. The effective area can be modeled as:
+
+\[
+A_{\text{effective}} = A \cdot \cos(\theta)
+\]
+
+Where:
+- \( A_{\text{effective}} \) is the effective cross-sectional area facing the airflow
+- \( A \) is the total cross-sectional area
+- \( \theta \) is the angle of attack between the velocity vector and the surface normal
+
+This equation assumes the drag force depends on how the projectile is oriented relative to its flight path.
+
+### 5. **Mach Number Calculation (Optional):**
+The Mach number is an important parameter for supersonic and transonic flows. You can calculate it by:
+
+\[
+M = \frac{v}{c}
+\]
+
+Where:
+- \( v \) = Velocity of the projectile (m/s)
+- \( c \) = Speed of sound at the current altitude/temperature (m/s)
+
+The speed of sound can be calculated based on the temperature at the projectile’s altitude using the formula:
+
+\[
+c = \sqrt{\gamma \cdot R \cdot T}
+\]
+
+Where:
+- \( \gamma \) = Ratio of specific heats for air (approximately 1.4 for dry air)
+- \( R \) = Specific gas constant for air (287.05 J/kg·K)
+- \( T \) = Temperature in Kelvin
+
+### 6. **Terminal Velocity Check (Optional):**
+At high altitudes or low drag conditions, the projectile could reach terminal velocity, where the force of gravity equals the drag force. The terminal velocity can be computed by balancing the gravitational force with the drag force:
+
+\[
+F_d = F_g
+\]
+
+Where \( F_g = m \cdot g \), and \( F_d \) is given by the drag equation.
+
+Solving for terminal velocity \( v_t \):
+
+\[
+\frac{1}{2} \cdot C_d \cdot \rho \cdot A \cdot v_t^2 = m \cdot g
+\]
+
+Thus:
+
+\[
+v_t = \sqrt{\frac{2 \cdot m \cdot g}{C_d \cdot \rho \cdot A}}
+\]
+
+Where:
+- \( m \) = Mass of the projectile
+- \( g \) = Gravitational acceleration
+
+This will give you the speed at which the projectile will stop accelerating and maintain a constant speed due to drag.
+
+---
+
+### Summary of Key Equations:
+1. **Drag Force**: 
+   \[
+   F_d = \frac{1}{2} \cdot C_d \cdot \rho \cdot A \cdot v^2
+   \]
+2. **Dynamic Drag Coefficient**: 
+   \[
+   C_d(v) \quad \text{(could be a function of velocity or Mach number)}
+   \]
+3. **Air Density (ISA Model)**: 
+   \[
+   \rho(h) = \rho_0 \left( 1 - \frac{L \cdot h}{T_0} \right)^{\frac{g_0 \cdot M}{R \cdot L} - 1}
+   \]
+4. **Cross-sectional Area (Angle of Attack)**: 
+   \[
+   A_{\text{effective}} = A \cdot \cos(\theta)
+   \]
+5. **Mach Number**:
+   \[
+   M = \frac{v}{c}, \quad c = \sqrt{\gamma \cdot R \cdot T}
+   \]
+6. **Terminal Velocity**:
+   \[
+   v_t = \sqrt{\frac{2 \cdot m \cdot g}{C_d \cdot \rho \cdot A}}
+   \]
+
+These equations will help you calculate drag forces, adjust parameters like drag coefficient based on velocity and Mach number, and incorporate realistic air density changes and terminal velocity behaviors.

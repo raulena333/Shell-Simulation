@@ -1,0 +1,3 @@
+https://github.com/g-truc/glm/releases
+https://glm.g-truc.net/0.9.7/glm-0.9.7.pdf
+https://openframeworks.cc/documentation/glm/

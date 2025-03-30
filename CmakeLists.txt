@@ -1,0 +1,47 @@
+# Minimum CMake version required
+cmake_minimum_required(VERSION 3.10)
+
+# Project name
+project(TankImpactSimulation)
+
+# Set C++ standard
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+# Directories
+set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
+set(INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
+set(LIB_DIR ${CMAKE_SOURCE_DIR}/lib)
+set(ASSET_DIR ${CMAKE_SOURCE_DIR}/assets)
+set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
+
+# Output paths for executables and libraries
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BUILD_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${BUILD_DIR}/lib)
+
+# Add include directories (Tells the compiler where to find header files)
+include_directories(${INCLUDE_DIR})
+
+# Collect source files (Automatically collects all .cpp files under the src)
+file(GLOB_RECURSE SOURCES "${SOURCE_DIR}/*.cpp")
+
+# Add executable
+add_executable(${PROJECT_NAME} ${SOURCES})
+
+# Link libraries from lib/ directory
+file(GLOB LIBRARIES "${LIB_DIR}/*.a" "${LIB_DIR}/*.so")
+target_link_libraries(${PROJECT_NAME} ${LIBRARIES})
+
+# Copy assets to the build directory
+add_custom_command(
+    TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${ASSETS_DIR} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets
+)
+
+# Platform-specific settings (optional)
+if(WIN32)
+    message(STATUS "Building on Windows")
+elseif(UNIX)
+    message(STATUS "Building on Unix-like system")
+endif()
