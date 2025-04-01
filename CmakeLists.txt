@@ -19,8 +19,8 @@ set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BUILD_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${BUILD_DIR}/lib)
 
-# Add include directories (Tells the compiler where to find header files)
-include_directories(${INCLUDE_DIR})
+# If you're using vcpkg, add this line to configure the toolchain
+set(CMAKE_TOOLCHAIN_FILE "C:/Users/raule/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
 
 # Collect source files (Automatically collects all .cpp files under the src)
 file(GLOB_RECURSE SOURCES "${SOURCE_DIR}/*.cpp")
@@ -28,15 +28,26 @@ file(GLOB_RECURSE SOURCES "${SOURCE_DIR}/*.cpp")
 # Add executable
 add_executable(${PROJECT_NAME} ${SOURCES})
 
+# Specify the include directories for the project and GLM
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${INCLUDE_DIR}
+    "C:/Users/raule/vcpkg/packages/glm_x64-windows/include"
+)
+
 # Link libraries from lib/ directory
-file(GLOB LIBRARIES "${LIB_DIR}/*.a" "${LIB_DIR}/*.so")
+if(WIN32)
+    file(GLOB LIBRARIES "${LIB_DIR}/*.lib")
+else()
+    file(GLOB LIBRARIES "${LIB_DIR}/*.a" "${LIB_DIR}/*.so")
+endif()
+
 target_link_libraries(${PROJECT_NAME} ${LIBRARIES})
 
 # Copy assets to the build directory
 add_custom_command(
     TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${ASSETS_DIR} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets
+    ${ASSET_DIR} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets
 )
 
 # Platform-specific settings (optional)
@@ -45,3 +56,4 @@ if(WIN32)
 elseif(UNIX)
     message(STATUS "Building on Unix-like system")
 endif()
+
